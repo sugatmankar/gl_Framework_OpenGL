@@ -1,0 +1,3 @@
+Log File Is Successfully Opened.
+GL Version :  4.6.0 NVIDIA 390.77 
+GLSL Version:  4.60 NVIDIA 
