@@ -8,7 +8,7 @@
 
 #include <vmath.h>
 
-#pragma comment(lib,"glew32sd.lib")
+//#pragma comment(lib,"glew32sd.lib")
 #pragma comment(lib,"opengl32.lib")
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"gdi32.lib")
@@ -39,16 +39,16 @@ namespace NFramework {
 
 		int i = 0;
 	protected:
-	    static NFramework::TFrameworkMain *app;
+		static NFramework::TFrameworkMain *app;
 		MSG msg;
 
 	public:
-		FILE *gpFile = NULL;
+		FILE * gpFile = NULL;
 		TFrameworkMain() {}
 
 		virtual ~TFrameworkMain() {}
 
-		int run( NFramework::TFrameworkMain* the_app, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+		int run(NFramework::TFrameworkMain* the_app, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 			bool running = true;
 			app = the_app;
 
@@ -308,6 +308,12 @@ namespace NFramework {
 						gbFullScreen = false;
 					}
 					break;
+				case 0x41:
+					animationToggle();
+					break;
+				case 0x4C:
+					lightToggle();
+					break;
 				default:
 					break;
 				}
@@ -315,11 +321,12 @@ namespace NFramework {
 			case WM_LBUTTONDOWN:
 				break;
 			case WM_MOUSEWHEEL:
-				
+
 				zoomInOut(GET_WHEEL_DELTA_WPARAM(wParam));
 				//MessageBox(NULL, TEXT("Ok "), TEXT("Mouse Wheel"), MB_OK);
 				//fprintf(gpFile, "Delta : %d \n", );
 				break;
+
 			case WM_CLOSE:
 				uninitialize();
 				uninit();
@@ -372,7 +379,16 @@ namespace NFramework {
 
 		virtual void zoomInOut(short szDelta)
 		{
-			
+
+		}
+
+		virtual void animationToggle(void)
+		{
+		}
+
+		virtual void lightToggle(void)
+		{
+
 		}
 
 		virtual void uninitialize(void)
