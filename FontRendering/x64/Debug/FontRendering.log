@@ -1,5 +1,0 @@
-﻿  FontRenderer.cpp
-c:\users\sugad.mankar\downloads\gl_framework_cpp-master\gl_framework_cpp-master\includes\vmath.h(996): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\sugad.mankar\downloads\gl_framework_cpp-master\gl_framework_cpp-master\fontrendering\fontrenderer.cpp(122): warning C4838: conversion from 'FT_Pos' to 'GLuint' requires a narrowing conversion
-glew32sd.lib(glew.obj) : warning LNK4099: PDB 'glew_static.pdb' was not found with 'glew32sd.lib(glew.obj)' or at 'C:\Users\Sugad.mankar\Downloads\gl_framework_cpp-master\gl_framework_cpp-master\x64\Debug\glew_static.pdb'; linking object as if no debug info
-  FontRendering.vcxproj -> C:\Users\Sugad.mankar\Downloads\gl_framework_cpp-master\gl_framework_cpp-master\x64\Debug\FontRendering.exe

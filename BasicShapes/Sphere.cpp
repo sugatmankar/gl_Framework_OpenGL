@@ -7,7 +7,7 @@
 using namespace vmath;
 
 
-class BasicShapesUV : public NFramework::TFrameworkMain
+class Sphere : public NFramework::TFrameworkMain
 {
 
 	GLuint gVertexShaderObject;
@@ -35,19 +35,10 @@ class BasicShapesUV : public NFramework::TFrameworkMain
 	GLfloat fovy = 30.0f;
 	mat4 gPerspectiveProjectionMatrix;
 
-	/*std::vector<GLfloat> sphere_vertices;
+	std::vector<GLfloat> sphere_vertices;
 	std::vector<GLfloat> sphere_normals;
 	std::vector<GLfloat> sphere_texcoords;
-	std::vector<GLuint> sphere_elements;*/
-	GLfloat *sphere_vertices;
-	GLfloat *sphere_normals;
-	GLfloat *sphere_texcoords;
-	GLuint *sphere_elements;
-
-	int numberof_sphere_vertices;
-	int numberof_sphere_normals;
-	int numberof_sphere_texcoords;
-	int numberof_sphere_elements;
+	std::vector<GLushort> sphere_elements;
 
 	int gAnimationToggle, gLightToggle;
 
@@ -195,12 +186,12 @@ class BasicShapesUV : public NFramework::TFrameworkMain
 		kdUniform = glGetUniformLocation(gShaderProgramObject, "u_Kd");
 		lightPositionUniform = glGetUniformLocation(gShaderProgramObject, "u_light_position");
 
-		getSphereVertexData(0.5, 10, 10);
-		/*
+		getSphereVertexData(0.5, 32, 16);
+
 		std::vector<GLfloat>::iterator v = sphere_vertices.begin();
 		std::vector<GLfloat>::iterator n = sphere_normals.begin();
 		std::vector<GLfloat>::iterator t = sphere_texcoords.begin();
-		std::vector<GLuint>::iterator i = sphere_elements.begin();
+		std::vector<GLushort>::iterator i = sphere_elements.begin();
 
 		fprintf(gpFile, "Sphere Vertices size: %I64u\n", sphere_vertices.size());
 		int count = 0;
@@ -213,34 +204,33 @@ class BasicShapesUV : public NFramework::TFrameworkMain
 				count = 0;
 			}
 
-		}*/
-		fprintf(gpFile, "Sphere Vertices size: %d\n",numberof_sphere_vertices);
-		fprintf(gpFile, "Sphere Normals size: %d\n",numberof_sphere_normals);
-		fprintf(gpFile, "Sphere Texcoords size: %d\n", numberof_sphere_texcoords);
-		fprintf(gpFile, "Sphere Indices size: %d\n", numberof_sphere_elements);
+		}
+		fprintf(gpFile, "Sphere Normals size: %I64u\n", sphere_normals.size());
+		fprintf(gpFile, "Sphere Texcoords size: %I64u\n", sphere_texcoords.size());
+		fprintf(gpFile, "Sphere Indices size: %I64u\n", sphere_elements.size());
 
 		glGenVertexArrays(1, &gVao_Sphere);
 		glBindVertexArray(gVao_Sphere);
 
 		glGenBuffers(1, &gVbo_Sphere_Position);
 		glBindBuffer(GL_ARRAY_BUFFER, gVbo_Sphere_Position);
-		glBufferData(GL_ARRAY_BUFFER, numberof_sphere_vertices, sphere_vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sphere_vertices.size() * sizeof(GLfloat), &sphere_vertices[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(SAM_ATTRIBUTE_VERTEX, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray(SAM_ATTRIBUTE_VERTEX);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glGenBuffers(1, &gVbo_Sphere_Normal);
 		glBindBuffer(GL_ARRAY_BUFFER, gVbo_Sphere_Normal);
-		glBufferData(GL_ARRAY_BUFFER, numberof_sphere_normals, sphere_normals, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sphere_normals.size() * sizeof(GLfloat) , &sphere_normals[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(SAM_ATTRIBUTE_NORMAL, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray(SAM_ATTRIBUTE_NORMAL);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
+
 		glBindVertexArray(0);
 
 		glGenBuffers(1, &gVbo_Sphere_element);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_Sphere_element);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberof_sphere_elements, sphere_elements, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere_elements.size() * sizeof(GLushort), &sphere_elements[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 		glShadeModel(GL_SMOOTH);
@@ -260,11 +250,11 @@ class BasicShapesUV : public NFramework::TFrameworkMain
 		resize(WIN_WIDTH, WIN_HEIGHT);
 	}
 
-	void getSphereVertexData(GLfloat radius, GLint slices, GLint stacks)
+	void getSphereVertexData(float radius, unsigned int slices, unsigned int stacks)
 	{
-		GLint vertexCount = (slices + 1)*(stacks + 1);
+		int vertexCount = (slices + 1)*(stacks + 1);
 
-		/*sphere_vertices.resize(3 * vertexCount);
+		sphere_vertices.resize(3 * vertexCount);
 		sphere_normals.resize(3 * vertexCount);
 		sphere_texcoords.resize(2 * vertexCount);
 		sphere_elements.resize(2 * slices * stacks * 3);
@@ -272,60 +262,41 @@ class BasicShapesUV : public NFramework::TFrameworkMain
 		std::vector<GLfloat>::iterator vt = sphere_vertices.begin();
 		std::vector<GLfloat>::iterator nl = sphere_normals.begin();
 		std::vector<GLfloat>::iterator tc = sphere_texcoords.begin();
-		std::vector<GLuint>::iterator ic = sphere_elements.begin();*/
-		sphere_vertices = (GLfloat*) calloc(3 * vertexCount, sizeof(GLfloat));
-		sphere_normals = (GLfloat*) calloc(3 * vertexCount, sizeof(GLfloat));
-		sphere_texcoords = (GLfloat*)calloc(2 * vertexCount, sizeof(GLfloat));;
-		sphere_elements = (GLuint*)calloc(2 * slices * stacks * 3, sizeof(GLuint));
+		std::vector<GLushort>::iterator ic = sphere_elements.begin();
 
-		numberof_sphere_vertices = 3 * vertexCount * sizeof(GLfloat);
-		numberof_sphere_normals = 3 * vertexCount * sizeof(GLfloat);
-		numberof_sphere_texcoords = 2 * vertexCount * sizeof(GLfloat);
-		numberof_sphere_elements = 2 * slices * stacks * 3 * sizeof(GLuint);
-
-		GLfloat du = (GLfloat)(2 * M_PI / slices);
-		GLfloat dv = (GLfloat)(M_PI / stacks);
-		GLint  i, j ,k = 0 ;
-		GLfloat u, v, x, y, z;
-		GLint indexV = 0;
-		GLint indexT = 0;
-
+		float du = 2 * M_PI / slices;
+		float dv = M_PI / stacks;
+		float  i, j, u, v, x, y, z;
+		int indexV = 0;
+		int indexT = 0;
 		for (i = 0; i <= stacks; i++) {
-		
-			v = (GLfloat)(-M_PI / 2 + i * dv);
-			
+			v = -M_PI / 2 + i * dv;
 			for (j = 0; j <= slices; j++) {
-			
 				u = j * du;
-				
 				x = cos(u)*cos(v);
 				y = sin(u)*cos(v);
 				z = sin(v);
-				
-				sphere_vertices[indexV] = radius * x;
-				sphere_normals[indexV++] = x;
-				sphere_vertices[indexV] = radius * y;
-				sphere_normals[indexV++] = y;
-				sphere_vertices[indexV] = radius * z;
-				sphere_normals[indexV++] = z;
-				sphere_texcoords[indexT++] = (GLfloat)(j / slices);
-				sphere_texcoords[indexT++] = (GLfloat)(i / stacks);
+				vt[indexV] = radius * x;
+				nl[indexV++] = x;
+				vt[indexV] = radius * y;
+				nl[indexV++] = y;
+				vt[indexV] = radius * z;
+				nl[indexV++] = z;
+				tc[indexT++] = j / slices;
+				tc[indexT++] = i / stacks;
 			}
 		}
-		
-		for (j = 0; j < stacks; j++) 
-		{
-			GLuint row1 = (GLuint)(j * (slices + 1));
-			GLuint row2 = (GLuint)((j + 1)*(slices + 1));
-
-			for (i = 0; i < slices; i++) 
-			{
-				sphere_elements[k++] = row1 + i;
-				sphere_elements[k++] = row2 + i + 1;
-				sphere_elements[k++] = row2 + i;
-				sphere_elements[k++] = row1 + i;
-				sphere_elements[k++] = row1 + i + 1;
-				sphere_elements[k++] = row2 + i + 1;
+		int k = 0;
+		for (j = 0; j < stacks; j++) {
+			int row1 = j * (slices + 1);
+			int row2 = (j + 1)*(slices + 1);
+			for (i = 0; i < slices; i++) {
+				ic[k++] = row1 + i;
+				ic[k++] = row2 + i + 1;
+				ic[k++] = row2 + i;
+				ic[k++] = row1 + i;
+				ic[k++] = row1 + i + 1;
+				ic[k++] = row2 + i + 1;
 			}
 		}
 	}
@@ -364,8 +335,9 @@ class BasicShapesUV : public NFramework::TFrameworkMain
 
 
 		glBindVertexArray(gVao_Sphere);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_Sphere_element);
-			glDrawElements(GL_TRIANGLES, numberof_sphere_elements, GL_UNSIGNED_INT, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_Sphere_element);
+		glDrawElements(GL_TRIANGLES, sphere_elements.size(), GL_UNSIGNED_SHORT, 0);
+
 		glBindVertexArray(0);
 
 		glUseProgram(0);
@@ -416,11 +388,6 @@ class BasicShapesUV : public NFramework::TFrameworkMain
 
 	void uninitialize() {
 
-		free(sphere_vertices);
-		free(sphere_normals);
-		free(sphere_texcoords);
-		free(sphere_elements);
-
 		if (gVao_Sphere)
 		{
 			glDeleteVertexArrays(1, &gVao_Sphere);
@@ -458,6 +425,5 @@ class BasicShapesUV : public NFramework::TFrameworkMain
 };
 
 
-DECLARE_MAIN(BasicShapesUV)
-
+DECLARE_MAIN(Sphere)
 
